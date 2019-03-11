@@ -6,7 +6,7 @@
 
 import org.apache.spark.sql.functions.lit
 
-val display = (value: DataFrame) => {
+val display = (value: org.apache.spark.sql.DataFrame) => {
    value.show()
 }
 
