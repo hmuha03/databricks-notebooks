@@ -133,3 +133,4 @@ val cosmosDBConfig = Config(Map(
 
 cosmosDbVertices.write.mode(SaveMode.Overwrite).cosmosDB(cosmosDBConfig)
 cosmosDbEdges.write.mode(SaveMode.Overwrite).cosmosDB(cosmosDBConfig)
+
