@@ -1,12 +1,16 @@
 // Databricks notebook source
 // MAGIC %md # Writing GraphFrames to Azure Cosmos DB Gremlin API
 // MAGIC This notebook is based on the `GraphFrames` example [specified here](https://graphframes.github.io/user-guide.html#tab_scala_0). It requires [graphframes](https://spark-packages.org/package/graphframes/graphframes) and [azure-cosmosdb-spark (uber jar)](https://github.com/Azure/azure-cosmosdb-spark#using-databricks-notebooks) libraries to be uploaded and attached to the cluster. **Python version** of this notebook can be [found here](https://github.com/syedhassaanahmed/databricks-notebooks/blob/master/graph_write_cosmosdb.py)
-
+// spark-shell --jars graphframes-0.7.0-spark2.4-s_2.11.jar,azure-cosmosdb-spark_2.4.0_2.11-1.3.5-uber.jar
 // COMMAND ----------
 
 import org.apache.spark.sql.functions.lit
 
-val v = sqlContext.createDataFrame(List(
+val display = (value: DataFrame) => {
+   value.show()
+}
+
+val v = spark.createDataFrame(List(
   ("a", "Alice", 34),
   ("b", "Bob", 36),
   ("c", "Charlie", 30),
@@ -14,12 +18,11 @@ val v = sqlContext.createDataFrame(List(
   ("e", "Esther", 32),
   ("f", "Fanny", 36),
   ("g", "Gabby", 60)
-)).toDF("id", "name", "age")
-.withColumn("entity", lit("person"))
+)).toDF("id", "name", "age").withColumn("entity", lit("person"))
 
 // COMMAND ----------
 
-val e = sqlContext.createDataFrame(List(
+val e = spark.createDataFrame(List(
   ("a", "b", "friend"),
   ("b", "c", "follow"),
   ("c", "b", "follow"),
