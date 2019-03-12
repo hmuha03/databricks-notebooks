@@ -73,20 +73,18 @@ import org.apache.spark.sql.DataFrame
 import scala.collection.mutable.ListBuffer
 
 def toCosmosDBVertices(dfVertices: DataFrame, labelColumn: String, partitionKey: String = "") : DataFrame = {
-  val dfResult = dfVertices
+  var dfResult = dfVertices
         .withColumn("id", udfUrlEncode($"id")).withColumn("pk", udfMd5Hash($"id"))
    
-  //if (!partitionKey.isEmpty()) {
-      // dfResult = dfVertices
-           
-        
-  //}
+  if (!partitionKey.isEmpty()) {
+      dfResult = dfResult.withColumn(partitionKey, udfMd5Hash($"id"))
+  }
   
   var columns = ListBuffer("id", labelColumn)
   
-  //if (!partitionKey.isEmpty()) {
-    columns += "pk"
-  //}
+  if (!partitionKey.isEmpty()) {
+    columns += partitionKey
+  }
   
   columns ++= dfResult.columns.filterNot(columns.contains(_))
     .map(x => s"""nvl2($x, array(named_struct("id", uuid(), "_value", $x)), NULL) AS $x""")
