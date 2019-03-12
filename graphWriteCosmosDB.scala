@@ -84,9 +84,9 @@ def toCosmosDBVertices(dfVertices: DataFrame, labelColumn: String, partitionKey:
   
   var columns = ListBuffer("id", labelColumn)
   
-  if (!partitionKey.isEmpty()) {
+  //if (!partitionKey.isEmpty()) {
     columns += "pk"
-  }
+  //}
   
   columns ++= dfResult.columns.filterNot(columns.contains(_))
     .map(x => s"""nvl2($x, array(named_struct("id", uuid(), "_value", $x)), NULL) AS $x""")
@@ -144,4 +144,6 @@ val cosmosDBConfig = Config(Map(
 
 cosmosDbVertices.write.mode(SaveMode.Overwrite).cosmosDB(cosmosDBConfig)
 cosmosDbEdges.write.mode(SaveMode.Overwrite).cosmosDB(cosmosDBConfig)
+
+
 
