@@ -63,18 +63,29 @@ val urlEncode = (value: String) => {
 
 val udfUrlEncode = udf(urlEncode, StringType)
 
+def md5Hash(text: String) : String = java.security.MessageDigest.getInstance("MD5").digest(text.getBytes()).map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
+
+val udfMd5Hash = udf(md5Hash _, StringType)
+
 // COMMAND ----------
 
 import org.apache.spark.sql.DataFrame
 import scala.collection.mutable.ListBuffer
 
 def toCosmosDBVertices(dfVertices: DataFrame, labelColumn: String, partitionKey: String = "") : DataFrame = {
-  val dfResult = dfVertices.withColumn("id", udfUrlEncode($"id"))
+  val dfResult = dfVertices
+        .withColumn("id", udfUrlEncode($"id")).withColumn("pk", udfMd5Hash($"id"))
+   
+  //if (!partitionKey.isEmpty()) {
+      // dfResult = dfVertices
+           
+        
+  //}
   
   var columns = ListBuffer("id", labelColumn)
   
   if (!partitionKey.isEmpty()) {
-    columns += partitionKey
+    columns += "pk"
   }
   
   columns ++= dfResult.columns.filterNot(columns.contains(_))
