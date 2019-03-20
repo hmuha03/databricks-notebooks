@@ -10,27 +10,39 @@ val display = (value: org.apache.spark.sql.DataFrame) => {
    value.show()
 }
 
-val v = spark.createDataFrame(List(
-  ("a", "Alice", 34),
-  ("b", "Bob", 36),
-  ("c", "Charlie", 30),
-  ("d", "David", 29),
-  ("e", "Esther", 32),
-  ("f", "Fanny", 36),
-  ("g", "Gabby", 60)
-)).toDF("id", "name", "age").withColumn("entity", lit("person"))
+val ing = spark.createDataFrame(List(
+  ("heavy cream", "dairy and eggs"),
+  ("Sugar", "Bob"),
+  ("Salt pepper", "Charlie"),
+  ("chicken", "David"),
+  ("beef piece", "Esther"),
+  ("fish", "Fanny"),
+  ("garlic souce", "Gabby")
+)).toDF("id", "category").withColumn("entity", lit("ingredient"))
+
+val rec = spark.createDataFrame(List(
+  ("0_fizzy-strawberry-mocktail", "dairy and eggs"),
+  ("0_shrimp-and-black-bean-ceviche", "Bob"),
+  ("0_creamy-coconut-baked-oats", "Charlie"),
+  ("0_grilled-flatbread-pizzas", "David"),
+  ("0_cheesy-chicken-enchiladas", "Esther"),
+  ("0_grilled-chickpea--eggplant---tomato-flatbread", "Fanny"),
+  ("0_winter-salad-with-granny-smith-apple-vinaigrette", "Gabby")
+)).toDF("id", "category").withColumn("entity", lit("recipe"))
+
+val v = rec.union(ing)
 
 // COMMAND ----------
 
 val e = spark.createDataFrame(List(
-  ("a", "b", "friend"),
-  ("b", "c", "follow"),
-  ("c", "b", "follow"),
-  ("f", "c", "follow"),
-  ("e", "f", "follow"),
-  ("e", "d", "friend"),
-  ("d", "a", "friend"),
-  ("a", "e", "friend")
+  ("heavy cream", "0_fizzy-strawberry-mocktail", "belongsTo"),
+  ("Sugar", "0_shrimp-and-black-bean-ceviche", "belongsTo"),
+  ("Salt pepper", "0_creamy-coconut-baked-oats", "belongsTo"),
+  ("chicken", "0_grilled-flatbread-pizzas", "belongsTo"),
+  ("beef", "0_grilled-chickpea--eggplant---tomato-flatbread", "belongsTo"),
+  ("fish", "0_cheesy-chicken-enchiladas", "belongsTo"),
+  ("garlic souce", "0_cheesy-chicken-enchiladas", "belongsTo"),
+  ("garlic souce", "0_grilled-chickpea--eggplant---tomato-flatbread", "belongsTo")
 )).toDF("src", "dst", "relationship")
 
 // COMMAND ----------
