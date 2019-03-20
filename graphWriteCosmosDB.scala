@@ -74,7 +74,7 @@ import scala.collection.mutable.ListBuffer
 
 def toCosmosDBVertices(dfVertices: DataFrame, labelColumn: String, partitionKey: String = "") : DataFrame = {
   var dfResult = dfVertices
-        .withColumn("id", udfUrlEncode($"id")).withColumn("pk", udfMd5Hash($"id"))
+        .withColumn("id", udfUrlEncode($"id"))
    
   if (!partitionKey.isEmpty()) {
       dfResult = dfResult.withColumn(partitionKey, udfMd5Hash($"id"))
