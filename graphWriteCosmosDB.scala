@@ -106,7 +106,7 @@ def toCosmosDBVertices(dfVertices: DataFrame, labelColumn: String, partitionKey:
 
 // COMMAND ----------
 
-val cosmosDbVertices = toCosmosDBVertices(g.vertices, "entity")
+val cosmosDbVertices = toCosmosDBVertices(g.vertices, "entity", "pk")
 display(cosmosDbVertices)
 
 // COMMAND ----------
