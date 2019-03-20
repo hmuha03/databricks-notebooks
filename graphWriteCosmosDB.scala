@@ -116,12 +116,14 @@ import org.apache.spark.sql.functions.{concat_ws, col}
 def toCosmosDBEdges(g: GraphFrame, labelColumn: String, partitionKey: String = "") : DataFrame = {
   var dfEdges = g.edges
   
+   /*
   if (!partitionKey.isEmpty()) {
     dfEdges = dfEdges.alias("e")
       .join(g.vertices.alias("sv"), $"e.src" === $"sv.id")
       .join(g.vertices.alias("dv"), $"e.dst" === $"dv.id")
       .selectExpr("e.*", "sv." + partitionKey, "dv." + partitionKey + " AS _sinkPartition")
   }
+*/
   
   dfEdges = dfEdges
     .withColumn("id", udfUrlEncode(concat_ws("_", $"src", col(labelColumn), $"dst")))
@@ -130,13 +132,19 @@ def toCosmosDBEdges(g: GraphFrame, labelColumn: String, partitionKey: String = "
     .withColumn("_sink", udfUrlEncode($"dst"))
     .withColumnRenamed(labelColumn, "label")
     .drop("src", "dst")
+   
+   
+  if (!partitionKey.isEmpty()) {
+     dfEdges= dfEdges.withColumn(partitionKey, udfMd5Hash($"_vertexId"))
+                        .withColumn("_sinkPartition", udfMd5Hash($"_sink"))
+  }
   
   dfEdges
 }
 
 // COMMAND ----------
 
-val cosmosDbEdges = toCosmosDBEdges(g, "relationship")
+val cosmosDbEdges = toCosmosDBEdges(g, "relationship", "pk")
 display(cosmosDbEdges)
 
 // COMMAND ----------
